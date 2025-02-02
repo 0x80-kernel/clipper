@@ -1,0 +1,9 @@
+[package]
+name = "clipper"
+version = "0.1.0"
+authors = ["hehe <skyy@macaw.me>"]
+edition = "2021"
+
+[dependencies]
+regex = "1.11.1"
+winapi = { version = "0.3.9", features = ["winuser", "winbase"] }
