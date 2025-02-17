@@ -1,7 +1,9 @@
 [package]
 name = "clipper"
 version = "0.1.0"
-authors = ["hehe <skyy@macaw.me>"]
+authors = ["sky <skyy@macaw.me>"]
+description = "Regularly checks the clipboard for know crypto addresses and replaces it with another address"
+readme = "README.md"
 edition = "2021"
 
 [dependencies]

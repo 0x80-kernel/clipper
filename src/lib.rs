@@ -23,9 +23,9 @@ pub mod clipboard {
     pub fn open_clipboard() -> Result<(), &'static str> {
         unsafe {
             if OpenClipboard(null_mut()) == 0 {
-                Err("Failed to open the clipboard")
+                return Err("Failed to open the clipboard");
             } else {
-                Ok(())
+                return Ok(());
             }
         }
     }
@@ -40,31 +40,31 @@ pub mod clipboard {
     pub fn close_clipboard() -> Result<(), &'static str> {
         unsafe {
             if CloseClipboard() == 0 {
-                Err("Failed to close the clipboard")
+                return Err("Failed to close the clipboard");
             } else {
-                Ok(())
+                return Ok(());
             }
         }
     }
 
     /// Checks if the variable given is null
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `val` - A mutable c_void (C type void)
     /// * `err` - A string slice for the error message
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Ok(())` - If the value given is not null
     /// * `Err(&str)` - If the value given is null
-    /// 
+    ///
     fn check_null(val: *mut c_void, err: &str) -> Result<(), &str> {
         if val.is_null() {
             close_clipboard()?;
             return Err(err);
         }
-        Ok(())
+        return Ok(());
     }
 
     /// Gets clipboard text and returns it
@@ -83,7 +83,7 @@ pub mod clipboard {
                 .to_str()
                 .map_err(|_| "Failed to convert clipboard data to string")?
                 .to_owned();
-            Ok(text)
+            return Ok(text);
         }
     }
 
@@ -104,7 +104,7 @@ pub mod clipboard {
         let text_len: usize = text_cstring.as_bytes_with_nul().len();
         let h_heap: *mut c_void = unsafe { GetProcessHeap() };
         check_null(h_heap, "Failed to get process heap")?;
-        let h_mem: *mut c_void = unsafe { HeapAlloc(h_heap, 0 ,text_len) } as *mut c_void;
+        let h_mem: *mut c_void = unsafe { HeapAlloc(h_heap, 0, text_len) } as *mut c_void;
         check_null(h_mem, "Failed to allocate memory for clipboard data")?;
         unsafe {
             let h_mem_text: *mut u8 = h_mem as *mut u8;
@@ -119,6 +119,6 @@ pub mod clipboard {
                 return Err("Failed to set clipboard data");
             }
         }
-        Ok(())
+        return Ok(());
     }
 }
